@@ -24,8 +24,14 @@ To compile the shell, navigate to the project directory **`FirstProject/`** and 
 
 ```bash
 make
-
+```
 This will compile the program and create the binary executable ./bin/shell.
 
 Step 2: Run the Shell
 Once compiled, you can run the shell with the following command:
+
+```bash
+./bin/shell
+```
+This will start the shell with the Advanced Prompt format by default.
+
