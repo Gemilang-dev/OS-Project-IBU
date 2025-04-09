@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Iinclude       # Menambahkan -Iinclude untuk mencari file header di folder include/
+CFLAGS = -Wall
 SRC = src/shell.c src/commands.c src/utils.c
 OBJ = $(SRC:.c=.o)
 EXEC = bin/shell
