@@ -35,3 +35,65 @@ Once compiled, you can run the shell with the following command:
 ```
 This will start the shell with the Advanced Prompt format by default.
 
+## Switching Between Basic and Advanced Prompts
+
+### Changing from Basic to Advanced Prompt and Vice Versa
+
+- **Default Format**: When the shell starts, it displays the prompt in **Advanced format** by default. The prompt will look like:
+```bash
+machinename@username:~$
+```
+- **Switching to Basic Format**: To switch from **Advanced Prompt** to **Basic Prompt**, type the command:
+```bash
+switch
+```
+- **Switching Back to Advanced Format**: If you are currently in the **Basic Prompt**, you can switch back to the **Advanced Prompt** by typing the command:
+```bash
+prompt$
+```
+
+## List of Commands that can be Executed
+
+Here is a list of basic commands that can be executed in the shell after implementing **Task 1.1**:
+
+1. **`ls`**  
+   - Lists the files and directories in the current working directory.
+   - Example:
+     ```bash
+     ls
+     ```
+
+2. **`exit`**  
+   - Exits the shell program and returns to the terminal.
+   - Example:
+     ```bash
+     exit
+     ```
+
+3. **`pwd`**  
+   - Displays the current working directory.
+   - Example:
+     ```bash
+     pwd
+     ```
+
+4. **`cd`**  
+   - Changes the current working directory.
+   - Example:
+     ```bash
+     cd /path/to/directory
+     ```
+
+5. **`echo`**  
+   - Prints the provided string to the console.
+   - Example:
+     ```bash
+     echo "Hello, World!"
+     ```
+
+6. **`switch`**  
+   - Switches between **Basic Prompt** and **Advanced Prompt**.
+   - Example:
+     ```bash
+     switch
+     ```
