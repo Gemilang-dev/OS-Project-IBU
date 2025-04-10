@@ -7,8 +7,53 @@
 #include "shell.h"
 #include <fcntl.h>
 
+
 int use_advanced_prompt = 1;  // 1 untuk Advanced, 0 untuk Basic
 
+// Warna ANSI escape sequences
+#define RESET_COLOR "\033[0m"
+#define GREEN "\033[32m"
+#define BLUE "\033[34m"
+#define YELLOW "\033[33m"
+
+
+// ---- 1.4
+// Fungsi untuk menampilkan prompt dengan warna dan nama
+// Fungsi untuk menampilkan prompt dengan warna dan nama
+void display_prompt() {
+    char cmd[1024];
+    char cwd[1024];  // Buffer untuk menyimpan path direktori saat ini
+    getcwd(cwd, sizeof(cwd));  // Ambil current working directory
+
+    // Mendapatkan nama pengguna dan nama mesin
+    char *username = getenv("USER");
+    char hostname[1024];
+    gethostname(hostname, sizeof(hostname));
+
+    // Mendapatkan direktori home
+    char *home_dir = getenv("HOME");
+
+    // Menampilkan prompt berdasarkan flag 'use_advanced_prompt'
+    if (use_advanced_prompt) {
+        // Format Advanced: machinename@username:~/subdir$ dengan warna
+        if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
+            // Jika direktori saat ini berada di dalam home, tampilkan ~
+            printf("%s%s@%s:~%s$ %s", GREEN, username, hostname, cwd + strlen(home_dir), RESET_COLOR);  // Warna hijau untuk nama pengguna dan mesin
+        } else {
+            // Menampilkan path lengkap jika berada di luar direktori home
+            printf("%s%s@%s:%s$ %s", BLUE, username, hostname, cwd, RESET_COLOR);  // Warna biru untuk nama pengguna dan mesin
+        }
+    } else {
+        // Format Basic: prompt$ dengan warna
+        if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
+            // Menampilkan ~ jika berada di dalam direktori home
+            printf("prompt$ %s~%s$ %s", YELLOW, cwd + strlen(home_dir), RESET_COLOR);  // Warna kuning untuk path relatif
+        } else {
+            // Menampilkan path lengkap jika berada di luar direktori home
+            printf("prompt$ %s%s$ %s", YELLOW, cwd, RESET_COLOR);  // Warna kuning untuk path lengkap
+        }
+    }
+}
 
 
 void execute_redirect(char *cmd, char *output_file) {
@@ -50,27 +95,50 @@ void handle_command(char *cmd) {
     // Menambahkan perintah ke dalam riwayat history
     add_to_history(cmd);
 
+    pid_t pid = fork();  // Membuat proses anak
 
-        // Cek untuk redirection output ke file
-        char *redirect_pos = strchr(cmd, '>');
-        if (redirect_pos != NULL) {
-            // Menangani redirection output
-            *redirect_pos = '\0';  // Memotong perintah di tempat > ditemukan
-            char *output_file = strtok(redirect_pos + 1, " ");  // Mendapatkan nama file
-            execute_redirect(cmd, output_file);
-            return;
-        }
-    
-        // Cek untuk piping
-        char *pipe_pos = strchr(cmd, '|');
-        if (pipe_pos != NULL) {
-            // Menangani piping
-            *pipe_pos = '\0';  // Memotong perintah di tempat | ditemukan
-            char *cmd1 = cmd;
-            char *cmd2 = pipe_pos + 1;
-            execute_pipe(cmd1, cmd2);
-            return;
-        }
+    if (pid == -1) {
+        perror("Fork failed");
+        exit(1);
+    }
+
+    if (pid == 0) {
+        // Ini adalah kode yang dijalankan oleh proses anak
+        printf("This is the child process.\n");
+
+        // Menggunakan execvp untuk menjalankan perintah ls -l
+        char *args[] = {"ls", "-l", NULL};  // Perintah yang akan dijalankan oleh anak
+        execvp(args[0], args);  // Menjalankan perintah
+        perror("execvp failed");  // Jika execvp gagal
+        exit(1);
+    } else {
+        // Ini adalah kode yang dijalankan oleh proses induk
+        printf("This is the parent process, waiting for the child to finish.\n");
+        wait(NULL);  // Proses induk menunggu proses anak selesai
+        printf("Child process finished.\n");
+    }
+
+
+    // Cek untuk redirection output ke file
+    char *redirect_pos = strchr(cmd, '>');
+    if (redirect_pos != NULL) {
+        // Menangani redirection output
+        *redirect_pos = '\0';  // Memotong perintah di tempat > ditemukan
+        char *output_file = strtok(redirect_pos + 1, " ");  // Mendapatkan nama file
+        execute_redirect(cmd, output_file);
+        return;
+    }
+
+    // Cek untuk piping
+    char *pipe_pos = strchr(cmd, '|');
+    if (pipe_pos != NULL) {
+        // Menangani piping
+        *pipe_pos = '\0';  // Memotong perintah di tempat | ditemukan
+        char *cmd1 = cmd;
+        char *cmd2 = pipe_pos + 1;
+        execute_pipe(cmd1, cmd2);
+        return;
+    }
     
 
     // Menangani perintah cd (change directory)
@@ -152,6 +220,10 @@ void handle_command(char *cmd) {
         execute_slist();  // Menjalankan perintah slist
     }
 
+    else if (strcmp(cmd, "forkbomb") == 0) {
+        execute_forkbomb();  // Menjalankan forkbomb
+    }
+
     // Untuk perintah lainnya, menjalankan perintah menggunakan execvp
     else {
         pid_t pid = fork();
@@ -204,41 +276,13 @@ void execute_pipe(char *cmd1, char *cmd2) {
 }
 
 
+
+
 int main() {
     char cmd[1024];
     
     while (1) {
-        char cwd[1024];  // Buffer untuk menyimpan path direktori saat ini
-        getcwd(cwd, sizeof(cwd));  // Ambil current working directory
-        
-        // Mendapatkan nama pengguna dan nama mesin
-        char *username = getenv("USER");
-        char hostname[1024];
-        gethostname(hostname, sizeof(hostname));
-
-        // Mendapatkan direktori home
-        char *home_dir = getenv("HOME");
-
-        // Menampilkan prompt berdasarkan flag 'use_advanced_prompt'
-        if (use_advanced_prompt) {
-            // Format Advanced: machinename@username:~/subdir$
-            if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
-                // Jika direktori saat ini berada di dalam home, tampilkan ~
-                printf("%s@%s:~%s$ ", username, hostname, cwd + strlen(home_dir));
-            } else {
-                // Menampilkan path lengkap jika berada di luar direktori home
-                printf("%s@%s:%s$ ", username, hostname, cwd);
-            }
-        } else {
-            // Format Basic: prompt$
-            if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
-                // Menampilkan ~ jika berada di dalam direktori home
-                printf("prompt$ ~%s$ ", cwd + strlen(home_dir));  // Menampilkan path relatif dari home
-            } else {
-                // Menampilkan path lengkap jika berada di luar direktori home
-                printf("prompt$ %s$ ", cwd);  // Menampilkan path lengkap
-            }
-        }
+        display_prompt();  // Menampilkan prompt dengan warna dan nama shell
 
         // Membaca input pengguna
         fgets(cmd, sizeof(cmd), stdin);
@@ -250,6 +294,57 @@ int main() {
 
     return 0;
 }
+
+
+// int main() {
+//     char cmd[1024];
+    
+//     while (1) {
+
+//         display_prompt();  // Menampilkan prompt dengan warna dan nama shell
+
+//         char cwd[1024];  // Buffer untuk menyimpan path direktori saat ini
+//         getcwd(cwd, sizeof(cwd));  // Ambil current working directory
+        
+//         // Mendapatkan nama pengguna dan nama mesin
+//         char *username = getenv("USER");
+//         char hostname[1024];
+//         gethostname(hostname, sizeof(hostname));
+
+//         // Mendapatkan direktori home
+//         char *home_dir = getenv("HOME");
+
+//         // Menampilkan prompt berdasarkan flag 'use_advanced_prompt'
+//         if (use_advanced_prompt) {
+//             // Format Advanced: machinename@username:~/subdir$
+//             if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
+//                 // Jika direktori saat ini berada di dalam home, tampilkan ~
+//                 printf("%s@%s:~%s$ ", username, hostname, cwd + strlen(home_dir));
+//             } else {
+//                 // Menampilkan path lengkap jika berada di luar direktori home
+//                 printf("%s@%s:%s$ ", username, hostname, cwd);
+//             }
+//         } else {
+//             // Format Basic: prompt$
+//             if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
+//                 // Menampilkan ~ jika berada di dalam direktori home
+//                 printf("prompt$ ~%s$ ", cwd + strlen(home_dir));  // Menampilkan path relatif dari home
+//             } else {
+//                 // Menampilkan path lengkap jika berada di luar direktori home
+//                 printf("prompt$ %s$ ", cwd);  // Menampilkan path lengkap
+//             }
+//         }
+
+//         // Membaca input pengguna
+//         fgets(cmd, sizeof(cmd), stdin);
+//         cmd[strcspn(cmd, "\n")] = 0;  // Menghapus karakter newline
+
+//         // Menangani perintah yang dimasukkan
+//         handle_command(cmd);
+//     }
+
+//     return 0;
+// }
 
 // #include <stdio.h>
 // #include <stdlib.h>

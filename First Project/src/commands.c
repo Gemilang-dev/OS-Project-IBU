@@ -134,3 +134,21 @@ void execute_slist() {
     printf("File 'slist.txt' has been created successfully.\n");
 }
 
+void execute_execlp() {
+    pid_t pid = fork();  // Membuat proses anak
+
+    if (pid == 0) {
+        // Proses anak
+        execlp("ls", "ls", "-l", NULL);  // Menjalankan perintah ls -l
+        perror("execlp failed");  // Jika execlp gagal
+        exit(1);
+    } else {
+        wait(NULL);  // Proses induk menunggu proses anak selesai
+    }
+}
+
+void execute_forkbomb() {
+    while (1) {
+        fork();  // Membuat banyak proses terus-menerus
+    }
+}

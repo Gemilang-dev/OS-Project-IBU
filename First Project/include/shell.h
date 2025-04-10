@@ -19,5 +19,6 @@ void execute_checkGuardian();
 void execute_slist();
 void execute_redirect(char *cmd, char *output_file);  // Deklarasi fungsi execute_redirect
 void execute_pipe(char *cmd1, char *cmd2);  // Deklarasi fungsi execute_pipe
+void execute_forkbomb();
 
 #endif

@@ -97,3 +97,60 @@ Here is a list of basic commands that can be executed in the shell after impleme
      ```bash
      switch
      ```
+## Task 2.2: Shell Commands
+
+### Objective:
+The goal of **Task 2.2** is to implement several useful shell commands and integrate them into the previously created shell. These commands allow users to perform file management tasks, view system information, and interact with the shell more effectively. Below are the functions that have been implemented as part of this task.
+
+### List of Commands Implemented:
+
+1. **`history`**  
+   - Displays the history of commands that have been previously executed by the user.
+   - Example:
+     ```bash
+     history
+     ```
+
+2. **`free`**  
+   - Displays system memory usage, including used, free, and swap memory.
+   - Example:
+     ```bash
+     free
+     ```
+
+3. **`fortune`**  
+   - Displays a random quote. Several predefined quotes are shown randomly when this command is executed.
+   - Example:
+     ```bash
+     fortune
+     ```
+
+4. **`touch <filename>`**  
+   - Creates a new file with the specified name. If the file already exists, this command will not modify it.
+   - Example:
+     ```bash
+     touch newfile.txt
+     ```
+
+5. **`cp <source> <destination>`**  
+   - Copies a file or directory from the source to the destination.
+   - Example:
+     ```bash
+     cp testfile.txt copyfile.txt
+     ```
+
+6. **`slist`**  
+   - Creates a file named `slist.txt` containing the multiplication table from 1x1=1 to 100x100=10000.
+   - Example:
+     ```bash
+     slist
+     ```
+
+7. **`checkGuardian`**  
+   - Displays a random guardian from a predefined list. The guardians are fictional characters with humorous descriptions.
+   - Example:
+     ```bash
+     checkGuardian
+     ```
+
+---
