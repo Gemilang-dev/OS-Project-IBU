@@ -1,7 +1,6 @@
-==========================
-Operating Systems
-Questions 1.5
-==========================
+
+# Operating Systems Questions 1.5
+
 
 -----------------------------------
 Question 1.5.1: Kernel vs User Mode
