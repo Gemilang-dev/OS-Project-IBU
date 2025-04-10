@@ -1,5 +1,6 @@
 ==========================
-Operating Systems Questions 1.5
+Operating Systems
+Questions 1.5
 ==========================
 
 -----------------------------------
@@ -79,7 +80,7 @@ If fork() fails, ‘Hello4’ is printed.
 
 Potential Scenarios:
 
-Scenario 1: fork() succeeds and exec() succeeds:
+### Scenario 1: fork() succeeds and exec() succeeds:
 
 Output:
  ```bash
@@ -89,7 +90,7 @@ Hello3
  ```
 The child process prints "Hello1", and subsequently calls exec() that replaces the child process’ memory with a new process therefore the child will not see ‘Hello2’ printed. The parent process will be printing ‘Hello3’ after waiting on the child process.
 
-Scenario 2: fork() succeeds and exec() fails:
+### Scenario 2: fork() succeeds and exec() fails:
 
 Output:
  ```bash
@@ -101,7 +102,7 @@ Hello3
  ```
 Now the child process prints ‘Hello1’, after this will attempt exec() but since exec doesn’t find an executable may (potentially) lead to the child process executing ‘Hello2’ next. Parent prints ‘Hello3’ upon completion of the Children process.
 
-Scenario 3: fork() fails:
+### Scenario 3: fork() fails:
 
 Output:
  ```bash
