@@ -1,4 +1,10 @@
-# OS Shell Project
+# OS Shell Project (Project Topic 2)
+
+### Rayi Aqli Gemilang
+
+### Isa Selimovic
+
+Project Topic 2
 
 ## Task 1.1: Shell Interface
 
