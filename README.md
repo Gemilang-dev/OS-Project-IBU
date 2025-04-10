@@ -404,3 +404,77 @@ drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 src
 
 #### Explanation:
 The rfork system call is used to create a new thread-like process. It shares the address space between the parent and child processes, which helps in implementing a lightweight thread process.
+
+---
+
+## 🌈 Task 1.4: Add Some Colors to Your Shell and Give It a Name! 🐚
+
+### 📋 Task Description
+
+In this task, you're asked to create a **custom shell prompt** that's not only functional but also **colorful and full of personality**!  
+Using **ANSI escape sequences**, we can add color to terminal text to make it more visually appealing and easier to read.
+
+### 🎨 Colors Used
+
+| Color       | Purpose                                              |
+|-------------|------------------------------------------------------|
+| 🟢 Green     | For the username and hostname (advanced prompt)      |
+| 🔵 Blue      | For username and hostname when outside the `home` directory |
+| 🟡 Yellow    | For displaying the current path (basic prompt)       |
+| ⬜ Reset     | To reset the terminal color to default after prompt  |
+
+## 🧠 How the Prompt Works
+
+The `display_prompt()` function shows the prompt in **two different styles** based on the `use_advanced_prompt` flag:
+
+### 🧪 1. Advanced Prompt
+
+Format:  
+```bash
+username@hostname:~/subdir$
+```
+
+### 🧪 2. Basic Prompt Format
+
+Format:
+    prompt$ ~/subdir$
+
+Explanation:
+- Displays the shell name (prompt) and the current working directory.
+- The directory path is shown in 🟡 YELLOW.
+
+### 📁 Directory Display:
+
+- If the current directory is inside the user's home directory, it is shown as `~`.
+- Username and hostname are color-coded:
+  - 🟢 GREEN if inside the home directory.
+  - 🔵 BLUE if outside the home directory.
+
+### 🛠️ ANSI Color Definitions (in C)
+
+Use the following color definitions in your C program:
+
+    #define RESET_COLOR "\033[0m"
+    #define GREEN       "\033[32m"
+    #define BLUE        "\033[34m"
+    #define YELLOW      "\033[33m"
+
+### 📌 Extra Notes
+
+With these color enhancements, this shell prompt becomes:
+✅ Easier to read  
+✅ Easier to navigate  
+✅ Uniquely   
+
+### ▶️ How to Run
+
+To display your stylish new shell prompt, call the `display_prompt()` function inside the `main()` function like this:
+
+```c
+int main() {
+    // Show the colorful prompt
+    display_prompt();
+
+    // Shell operations go here...
+    return 0;
+}
