@@ -97,7 +97,7 @@ Here is a list of basic commands that can be executed in the shell after impleme
      ```bash
      switch
      ```
-## Task 2.2: Shell Commands
+## Task 1.2: Shell Commands
 
 ### Objective:
 The goal of **Task 2.2** is to implement several useful shell commands and integrate them into the previously created shell. These commands allow users to perform file management tasks, view system information, and interact with the shell more effectively. Below are the functions that have been implemented as part of this task.
