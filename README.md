@@ -121,21 +121,37 @@ MyShellProject/           # Main folder for the entire project
 8. **Repeat**
    - Shell goes back to displaying prompt, ready for the next command
 
+## Task 1.1: Shell Interface 🖥️
+=============================
+
+### Objective: 🎯
+--------------
+The goal of **Task 1.1** is to create a basic shell interface that:
+
+- Continuously prompts the user for input. ⌨️
+- Executes commands based on the user’s input. ⚙️
+- Returns to the prompt to ask for new input. 🔄
+
+The shell should display a prompt indicating readiness to receive commands. Initially, the prompt shows in a **Basic format** (`prompt$`), and later it is updated to an **Advanced format** (`machinename@username:~$`).
+
 ---
 
-## Task 1.1: Shell Interface
+### Basic Prompt vs Advanced Prompt 💻
+-----------------------------------
 
-### Objective:
-The goal of **Task 1.1** is to create a basic shell interface that continuously prompts the user for input, executes commands, and returns to the prompt to ask for new input. The shell should display a prompt that indicates readiness to receive commands and execute them. The prompt initially shows in a **Basic format** (`prompt$`), and we later updated it to display in an **Advanced format** (`machinename@username:~$`).
+- **Basic Prompt**: Displays only `prompt$` when waiting for user input. 📜
+  
+- **Advanced Prompt**: Displays `machinename@username:~$`, where:
+  - `machinename`: Represents the name of the system. 🖥️
+  - `username`: Represents the active user’s name. 🧑‍💻
 
-### **Basic Prompt and Advanced Prompt**
+---
 
-- **Basic Prompt**: Displays only `prompt$` when waiting for user input.
-- **Advanced Prompt**: Displays `machinename@username:~$`, where `machinename` is the name of the system and `username` is the active user’s name.
-
-### **Functionality**
-- The shell is designed to display a prompt and accept commands from the user.
-- Users can switch between the **Basic Prompt** (`prompt$`) and **Advanced Prompt** (`machinename@username:~$`) by typing the command **`switch`**.
+### Functionality: ⚡
+-------------------
+- The shell is designed to display a prompt and accept commands from the user. ⏳
+  
+- Users can switch between the **Basic Prompt** (`prompt$`) and **Advanced Prompt** (`machinename@username:~$`) by typing the command **`switch`**. 🔀
 
 ---
 
