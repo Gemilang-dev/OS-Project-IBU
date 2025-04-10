@@ -478,3 +478,148 @@ int main() {
     // Shell operations go here...
     return 0;
 }
+```
+
+---
+
+
+## 📘 Operating Systems Questions 1.5
+
+
+
+### 🔹 Question 1.5.1: Kernel vs User Mode
+
+
+🧪 Scenario: Program tries to read data from disk  
+🔧 Kernel Mode Required
+
+➡️ Why?  
+Reading from a disk requires system-level privileges, which are only granted in kernel mode.  
+User mode programs cannot directly perform I/O operations and must make system calls to the kernel.
+
+🕒 Scenario: Program reads the current time from the hardware clock  
+🔧 Kernel Mode Required
+
+➡️ Why?  
+Accessing the hardware clock requires privileged instructions. These are restricted to kernel mode to ensure security and system stability.
+
+
+### 🔹 Question 1.5.2: System Calls
+
+
+System calls provide a controlled interface for user applications to request services from the operating system.  
+Applications can't directly access hardware or sensitive system resources — instead, they rely on system calls.
+
+🧰 **Common Types of System Calls & Examples:**
+
+1. **🔄 Process Control**
+   - `fork()`  → Creates a new process.
+   - `exit()`  → Terminates the current process.
+
+2. **📂 File Management**
+   - `open()`  → Opens a file.
+   - `read()`  → Reads from a file.
+
+3. **🔌 Device Management**
+   - `close()` → Closes a file or device descriptor.
+
+4. **ℹ️ Information Maintenance**
+   - `getpid()` → Gets the current process ID.
+   - `times()`  → Returns CPU usage times.
+
+5. **📡 Communication**
+   - `pipe()`   → Sets up one-way communication.
+   - `msgsnd()` → Sends a message via a queue.
+
+
+##🔹 Question 1.5.3: fork() + exec() + wait() Case
+
+
+### 🧪 Sample C Code:
+
+```c
+int ret = fork();
+
+if (ret == 0) {
+    printf("Hello1\n");
+    exec("some_executable");
+    printf("Hello2\n");
+}
+else if (ret > 0) {
+    wait();
+    printf("Hello3\n");
+}
+else {
+    printf("Hello4\n");
+}
+```
+
+### 📘 Explanation of Output Possibilities
+
+
+🔄 Program Flow Overview:
+-------------------------
+- The program begins by calling `fork()` to create a child process.
+- If `fork()` returns `0`, it means we are in the **child process**:
+  - It prints **"Hello1"**
+  - Then attempts to run a new program using `exec()`
+- If `fork()` returns a **positive number**, we are in the **parent process**:
+  - The parent waits for the child to finish
+  - Then prints **"Hello3"**
+- If `fork()` returns **-1**, it means process creation failed, and:
+  - The program prints **"Hello4"**
+
+---
+
+🎯 Possible Output Scenarios:
+-------------------------
+
+📘 Detailed Output Scenarios for Fork + Exec + Wait
+===================================================
+
+🟢 Scenario 1: fork() Succeeds and exec() Succeeds
+--------------------------------------------------
+
+Output:
+
+```C
+Hello1
+Hello3
+```
+Explanation:
+-------------
+- The child process successfully prints "Hello1".
+- It then calls `exec()`, which replaces the current child process with a new program.
+- Since the child’s memory is replaced, it never reaches the line that prints "Hello2".
+- The parent process waits for the child to finish and then prints "Hello3".
+
+🔵 Scenario 2: fork() Succeeds and exec() Fails
+----------------------------------------------
+
+Output:
+```C
+Hello1
+Hello2
+Hello3
+```
+
+Explanation:
+-------------
+- The child process prints "Hello1".
+- It attempts to call `exec()`, but the system cannot find or execute the specified file.
+- As a result, the child continues execution and prints "Hello2".
+- Meanwhile, the parent process waits, and once the child completes, prints "Hello3".
+
+🔴 Scenario 3: fork() Fails
+---------------------------
+
+Output:
+```C
+Hello4
+```
+
+Explanation:
+-------------
+- The `fork()` call fails and returns -1.
+- The program enters the `else` block where it prints "Hello4".
+- Since no child process is created, the program does not proceed with further actions.
