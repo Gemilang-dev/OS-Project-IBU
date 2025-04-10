@@ -27,6 +27,102 @@ MyShellProject/           # Main folder for the entire project
     └── Makefile              # File for the build process (using make)
 ```
 
+## Overview of the Shell System
+
+---
+
+### 🔁 Shell Main Loop
+
+- **Function**: The shell continuously runs as long as its process is active. It accepts user input, executes commands, and returns to the prompt for the next command.
+- **Process**:
+  1. Execution starts in the `main()` function (in `shell.c`).
+  2. `display_prompt()` shows the prompt with username, machine name, and directory path.
+  3. `fgets()` reads the command from user input.
+
+---
+
+### 💬 Prompt
+
+- **Prompt Formats**:
+  - **Advanced Prompt**: `machinename@username:~$` — shows username, machine name, and relative path if in the home directory.
+  - **Basic Prompt**: `prompt$` — shows either the relative or full path.
+- You can toggle between prompt formats using the `switch` command.
+
+---
+
+### ⚙️ Handling Commands
+
+- **`handle_command()`**:
+  - Validates and handles user-entered commands.
+  - Implements built-in shell commands like `cd`, `exit`, `history`, `fortune`, `checkGuardian`, `cp`, etc.
+
+- **Command Functions**:
+  - `cd`, `exit`, and `history` are processed directly.
+  - `fortune`, `checkGuardian`, and `cp` are executed using `fork()` and `execvp()`.
+
+---
+
+### 📤 Output Redirection & 🔗 Piping
+
+- **Redirection (`>`):**
+  - Redirects command output to a file.
+  - Handled by `execute_redirect()`, using `open()` and `dup2()`.
+
+- **Piping (`|`):**
+  - Passes the output of one command as input to another.
+  - Handled by `execute_pipe()`, which creates two child processes with `fork()`.
+
+---
+
+### 🚀 Execution Functions
+
+- **`execvp()`**: Runs commands in a child process, searching the command in system `PATH`.
+- **`fork()`**: Creates child processes; parent waits with `wait()`.
+
+---
+
+### ✨ Other Features
+
+- **`slist`**: Generates a file `slist.txt` containing multiplication results from 1×1 to 100×100.
+- **`checkGuardian`**: Randomly displays one of 10 predefined guardian names.
+- **`forkbomb`**: Continuously spawns processes using `fork()` to overload system resources (for educational/demonstration purposes only ⚠️).
+
+---
+
+### 🧭 Shell Project Workflow Diagram
+
+1. **Shell Start**
+   - Program begins with `main()`
+   - Prompt is displayed via `display_prompt()`
+
+2. **User Inputs Command**
+   - User types a command and presses Enter
+   - Command is read using `fgets()` and passed to `handle_command()`
+
+3. **Command Validation**
+   - Checks if command is built-in (`cd`, `history`, etc.)
+   - If so, appropriate function is called
+
+4. **Executing Other Commands**
+   - For non-built-in commands, `fork()` and `execvp()` are used
+
+5. **Handling Redirection & Piping**
+   - If `>` or `|` is found:
+     - `execute_redirect()` handles redirection
+     - `execute_pipe()` handles piping
+
+6. **Command Execution**
+   - In child process, command is executed via `execvp()` or `execlp()`
+   - Output is displayed if successful
+
+7. **Parent Process**
+   - Waits for child to finish using `wait()`
+
+8. **Repeat**
+   - Shell goes back to displaying prompt, ready for the next command
+
+---
+
 ## Task 1.1: Shell Interface
 
 ### Objective:
