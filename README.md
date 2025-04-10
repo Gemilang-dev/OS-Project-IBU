@@ -574,8 +574,8 @@ else {
 🎯 Possible Output Scenarios:
 -------------------------
 
-📘 Detailed Output Scenarios for Fork + Exec + Wait
-===================================================
+### 📘 Detailed Output Scenarios for Fork + Exec + Wait
+
 
 🟢 Scenario 1: fork() Succeeds and exec() Succeeds
 --------------------------------------------------
