@@ -532,7 +532,7 @@ Applications can't directly access hardware or sensitive system resources — in
    - `msgsnd()` → Sends a message via a queue.
 
 
-##🔹 Question 1.5.3: fork() + exec() + wait() Case
+### 🔹 Question 1.5.3: fork() + exec() + wait() Case
 
 
 ### 🧪 Sample C Code:
