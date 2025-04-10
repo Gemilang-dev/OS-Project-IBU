@@ -8,9 +8,9 @@
 #include <fcntl.h>
 
 
-int use_advanced_prompt = 1;  // 1 untuk Advanced, 0 untuk Basic
+int use_advanced_prompt = 1;  // 1 for Advanced, 0 for Basic
 
-// Warna ANSI escape sequences
+// ANSI escape sequences for colors
 #define RESET_COLOR "\033[0m"
 #define GREEN "\033[32m"
 #define BLUE "\033[34m"
@@ -18,329 +18,183 @@ int use_advanced_prompt = 1;  // 1 untuk Advanced, 0 untuk Basic
 
 
 // ---- 1.4
-// Fungsi untuk menampilkan prompt dengan warna dan nama
-// Fungsi untuk menampilkan prompt dengan warna dan nama
+// Function to display the prompt with color and name
 void display_prompt() {
     char cmd[1024];
-    char cwd[1024];  // Buffer untuk menyimpan path direktori saat ini
-    getcwd(cwd, sizeof(cwd));  // Ambil current working directory
+    char cwd[1024];  // Buffer to store the current working directory path
+    getcwd(cwd, sizeof(cwd));  // Get current working directory
 
-    // Mendapatkan nama pengguna dan nama mesin
+    // Get the username and machine name
     char *username = getenv("USER");
     char hostname[1024];
     gethostname(hostname, sizeof(hostname));
 
-    // Mendapatkan direktori home
+    // Get the home directory
     char *home_dir = getenv("HOME");
 
-    // Menampilkan prompt berdasarkan flag 'use_advanced_prompt'
+    // Show the prompt based on 'use_advanced_prompt' flag
     if (use_advanced_prompt) {
-        // Format Advanced: machinename@username:~/subdir$ dengan warna
+        // Advanced format: machinename@username:~/subdir$ with color
         if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
-            // Jika direktori saat ini berada di dalam home, tampilkan ~
-            printf("%s%s@%s:~%s$ %s", GREEN, username, hostname, cwd + strlen(home_dir), RESET_COLOR);  // Warna hijau untuk nama pengguna dan mesin
+            // If current directory is inside home, show ~
+            printf("%s%s@%s:~%s$ %s", GREEN, username, hostname, cwd + strlen(home_dir), RESET_COLOR);  // Green color for username and hostname
         } else {
-            // Menampilkan path lengkap jika berada di luar direktori home
-            printf("%s%s@%s:%s$ %s", BLUE, username, hostname, cwd, RESET_COLOR);  // Warna biru untuk nama pengguna dan mesin
+            // Show full path if outside home directory
+            printf("%s%s@%s:%s$ %s", BLUE, username, hostname, cwd, RESET_COLOR);  // Blue color for username and hostname
         }
     } else {
-        // Format Basic: prompt$ dengan warna
+        // Basic format: prompt$ with color
         if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
-            // Menampilkan ~ jika berada di dalam direktori home
-            printf("prompt$ %s~%s$ %s", YELLOW, cwd + strlen(home_dir), RESET_COLOR);  // Warna kuning untuk path relatif
+            // Show ~ if inside home directory
+            printf("prompt$ %s~%s$ %s", YELLOW, cwd + strlen(home_dir), RESET_COLOR);  // Yellow color for relative path
         } else {
-            // Menampilkan path lengkap jika berada di luar direktori home
-            printf("prompt$ %s%s$ %s", YELLOW, cwd, RESET_COLOR);  // Warna kuning untuk path lengkap
+            // Show full path if outside home directory
+            printf("prompt$ %s%s$ %s", YELLOW, cwd, RESET_COLOR);  // Yellow color for full path
         }
     }
 }
 
 
 void execute_redirect(char *cmd, char *output_file) {
-    // Membuka file untuk menulis (akan membuat file jika tidak ada atau menimpa file yang ada)
+    // Open file for writing (will create the file if it doesn't exist or overwrite if it does)
     int fd = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
     if (fd == -1) {
         perror("Error opening file for redirect");
-        return;  // Menampilkan pesan kesalahan jika file gagal dibuka
+        return;  // Show error message if file fails to open
     }
 
     pid_t pid = fork();
     if (pid == 0) {
-        // Menyalurkan output ke file
-        if (dup2(fd, STDOUT_FILENO) == -1) {  // Mengalihkan output ke file
+        // Redirect output to file
+        if (dup2(fd, STDOUT_FILENO) == -1) {  // Redirect output to file
             perror("Error redirecting output");
             exit(1);
         }
-        close(fd);  // Menutup file descriptor setelah digunakan
+        close(fd);  // Close file descriptor after use
 
-        // Pisahkan perintah dan argumen
-        char *args[3];  // Maksimal 3 argumen: perintah, string pertama, string kedua
-        args[0] = "echo";  // Perintah echo
-        args[1] = cmd;  // Teks yang ingin dicetak
-        args[2] = NULL;  // Argumen terakhir harus NULL
+        // Split command and arguments
+        char *args[3];  // Maximum 3 arguments: command, first string, second string
+        args[0] = "echo";  // echo command
+        args[1] = cmd;     // Text to print
+        args[2] = NULL;    // Last argument must be NULL
 
-        execvp(args[0], args);  // Menjalankan perintah
-        perror("Error executing command");  // Jika execvp gagal
+        execvp(args[0], args);  // Execute the command
+        perror("Error executing command");  // If execvp fails
         exit(1);
     } else {
-        wait(NULL);  // Proses induk menunggu proses anak selesai
+        wait(NULL);  // Parent waits for child process to finish
     }
 
-    // Menambahkan notifikasi jika redirection berhasil
+    // Add a notification if redirection is successful
     printf("Output successfully redirected to '%s'.\n", output_file);
 }
-// Fungsi untuk menangani perintah yang dimasukkan pengguna
+
+//function to handle command
 void handle_command(char *cmd) {
-    // Menambahkan perintah ke dalam riwayat history
-    add_to_history(cmd);
-
-    pid_t pid = fork();  // Membuat proses anak
-
-    if (pid == -1) {
-        perror("Fork failed");
-        exit(1);
-    }
-
-    if (pid == 0) {
-        // Ini adalah kode yang dijalankan oleh proses anak
-        printf("This is the child process.\n");
-
-        // Menggunakan execvp untuk menjalankan perintah ls -l
-        char *args[] = {"ls", "-l", NULL};  // Perintah yang akan dijalankan oleh anak
-        execvp(args[0], args);  // Menjalankan perintah
-        perror("execvp failed");  // Jika execvp gagal
-        exit(1);
+    char *redirect_symbol = strchr(cmd, '>');  // Look for redirection symbol (>)
+    if (redirect_symbol != NULL) {
+        *redirect_symbol = '\0';  // Split string at '>', so we get command and file name
+        redirect_symbol++;        // Move to the filename
+        while (*redirect_symbol == ' ') redirect_symbol++;  // Skip spaces
+        char *output_file = redirect_symbol;
+        execute_redirect(cmd, output_file);  // Execute redirection logic
     } else {
-        // Ini adalah kode yang dijalankan oleh proses induk
-        printf("This is the parent process, waiting for the child to finish.\n");
-        wait(NULL);  // Proses induk menunggu proses anak selesai
-        printf("Child process finished.\n");
-    }
-
-
-    // Cek untuk redirection output ke file
-    char *redirect_pos = strchr(cmd, '>');
-    if (redirect_pos != NULL) {
-        // Menangani redirection output
-        *redirect_pos = '\0';  // Memotong perintah di tempat > ditemukan
-        char *output_file = strtok(redirect_pos + 1, " ");  // Mendapatkan nama file
-        execute_redirect(cmd, output_file);
-        return;
-    }
-
-    // Cek untuk piping
-    char *pipe_pos = strchr(cmd, '|');
-    if (pipe_pos != NULL) {
-        // Menangani piping
-        *pipe_pos = '\0';  // Memotong perintah di tempat | ditemukan
-        char *cmd1 = cmd;
-        char *cmd2 = pipe_pos + 1;
-        execute_pipe(cmd1, cmd2);
-        return;
-    }
-    
-
-    // Menangani perintah cd (change directory)
-    if (strncmp(cmd, "cd", 2) == 0) {
-        char *dir = strtok(cmd, " ");
-        dir = strtok(NULL, " ");  // Mengambil direktori yang ingin dituju
-
-        if (dir == NULL) {
-            dir = getenv("HOME");  // Jika tidak ada argumen, kembali ke direktori home
-        }
-
-        if (chdir(dir) != 0) {
-            perror("cd");  // Menampilkan error jika direktori tidak ditemukan
-        }
-    } 
-    // Menangani perintah echo
-    else if (strncmp(cmd, "echo", 4) == 0) {
-        char *text = strtok(cmd, " ");  // Mengabaikan 'echo'
-        text = strtok(NULL, "");        // Mendapatkan teks yang ingin ditampilkan
-        if (text != NULL) {
-            printf("%s\n", text);  // Menampilkan hasil echo
-        }
-    } 
-    // Menangani perintah exit
-    else if (strncmp(cmd, "exit", 4) == 0) {
-        exit(0); // Keluar dari shell
-    } 
-    // Menangani perintah switch untuk berganti prompt format
-    else if (strcmp(cmd, "switch") == 0) {
-        use_advanced_prompt = !use_advanced_prompt;  // Toggle prompt type
-        printf("Prompt switched to %s format.\n", use_advanced_prompt ? "Advanced" : "Basic");
-    } 
-    // Menangani perintah history
-    // Menangani perintah history
-    else if (strcmp(cmd, "history") == 0) {
-        execute_history();
-    } 
-    // Menangani perintah free
-    else if (strcmp(cmd, "free") == 0) {
-        execute_free();
-    } 
-    // Menangani perintah fortune
-    else if (strcmp(cmd, "fortune") == 0) {
-        execute_fortune();
-    } 
-    // Menangani perintah touch untuk membuat file baru
-    else if (strncmp(cmd, "touch", 5) == 0) {
-        // Mendapatkan nama file setelah perintah touch
-        char *filename = strtok(cmd, " ");
-        filename = strtok(NULL, " ");  // Mendapatkan nama file
-        if (filename != NULL) {
-            execute_touch(filename);  // Memanggil fungsi execute_touch untuk membuat file
+        // Handle basic internal commands
+        if (strcmp(cmd, "exit") == 0) {
+            exit(0);  // Exit the shell
+        } else if (strcmp(cmd, "use prompt basic") == 0) {
+            use_advanced_prompt = 0;
+        } else if (strcmp(cmd, "use prompt advanced") == 0) {
+            use_advanced_prompt = 1;
+        } else if (strncmp(cmd, "cd ", 3) == 0) {
+            // Change directory
+            char *path = cmd + 3;
+            if (chdir(path) != 0) {
+                perror("cd error");  // Print error if directory doesn't exist
+            }
         } else {
-            printf("Error: Missing filename\n");
-        }
-    } 
-
-
-    
-    // Menangani perintah cp untuk menyalin file
-    else if (strncmp(cmd, "cp", 2) == 0) {
-        char *source = strtok(cmd, " ");
-        char *destination = strtok(NULL, " ");
-        if (source != NULL && destination != NULL) {
-            execute_cp(source, destination);  // Menjalankan perintah cp
-        } else {
-            printf("Error: Missing source or destination\n");
-        }
-    } 
-
-
-    //check guardian /check khodam
-    else if (strcmp(cmd, "checkGuardian") == 0) {
-        execute_checkGuardian();  // Menjalankan perintah checkGuardian
-    }
-
-    // Menangani perintah slist untuk membuat file perkalian
-    else if (strcmp(cmd, "slist") == 0) {
-        execute_slist();  // Menjalankan perintah slist
-    }
-
-    else if (strcmp(cmd, "forkbomb") == 0) {
-        execute_forkbomb();  // Menjalankan forkbomb
-    }
-
-    // Untuk perintah lainnya, menjalankan perintah menggunakan execvp
-    else {
-        pid_t pid = fork();
-        if (pid == 0) {
-            char *args[] = {cmd, NULL};  // Menambahkan argumen jika perlu
-            execvp(cmd, args);  // Menjalankan perintah
-            exit(1);  // Jika execvp gagal
-        } else {
-            wait(NULL);  // Proses induk menunggu proses anak selesai
+            // Handle other system commands using fork and exec
+            pid_t pid = fork();
+            if (pid == 0) {
+                char *args[64];  // Buffer for command arguments
+                int i = 0;
+                args[i] = strtok(cmd, " ");  // Split by space
+                while (args[i] != NULL) {
+                    args[++i] = strtok(NULL, " ");
+                }
+                execvp(args[0], args);  // Execute system command
+                perror("Command not found");  // If execution fails
+                exit(1);
+            } else {
+                wait(NULL);  // Wait for child process to finish
+            }
         }
     }
 }
-
-
-
-
-// Fungsi untuk menangani piping
-void execute_pipe(char *cmd1, char *cmd2) {
-    int pipefd[2];
-    pipe(pipefd);  // Membuat pipe
-
-    pid_t pid1 = fork();
-    if (pid1 == 0) {
-        // Proses anak pertama (cmd1)
-        close(pipefd[0]);  // Menutup read end dari pipe
-        dup2(pipefd[1], STDOUT_FILENO);  // Menyalurkan output ke pipe
-        close(pipefd[1]);  // Menutup write end setelah digunakan
-
-        char *args1[] = {cmd1, NULL};
-        execvp(cmd1, args1);  // Menjalankan perintah pertama
-        exit(1);
-    } else {
-        pid_t pid2 = fork();
-        if (pid2 == 0) {
-            // Proses anak kedua (cmd2)
-            close(pipefd[1]);  // Menutup write end dari pipe
-            dup2(pipefd[0], STDIN_FILENO);  // Menyalurkan input dari pipe
-            close(pipefd[0]);  // Menutup read end setelah digunakan
-
-            char *args2[] = {cmd2, NULL};
-            execvp(cmd2, args2);  // Menjalankan perintah kedua
-            exit(1);
-        } else {
-            close(pipefd[0]);
-            close(pipefd[1]);
-            wait(NULL);  // Menunggu proses anak pertama dan kedua selesai
-            wait(NULL);
-        }
-    }
-}
-
-
 
 
 int main() {
-    char cmd[1024];
-    
+    char input[1024];  // Buffer to store user input
+
     while (1) {
-        display_prompt();  // Menampilkan prompt dengan warna dan nama shell
+        display_prompt();  // Show the prompt (basic or advanced)
+        fgets(input, sizeof(input), stdin);  // Read input from user
+        input[strcspn(input, "\n")] = '\0';  // Remove newline character from input
 
-        // Membaca input pengguna
-        fgets(cmd, sizeof(cmd), stdin);
-        cmd[strcspn(cmd, "\n")] = 0;  // Menghapus karakter newline
-
-        // Menangani perintah yang dimasukkan
-        handle_command(cmd);
+        // If user entered something (not just pressed enter), handle the command
+        if (strlen(input) > 0) {
+            handle_command(input);
+        }
     }
 
     return 0;
 }
 
-c
 
 // Main function before Coloring
 // int main() {
-//     char cmd[1024];
+//     char cmd[1024];  // Buffer to store user input
     
 //     while (1) {
 
-
-//         char cwd[1024];  // Buffer untuk menyimpan path direktori saat ini
-//         getcwd(cwd, sizeof(cwd));  // Ambil current working directory
+//         char cwd[1024];  // Buffer to store the current working directory path
+//         getcwd(cwd, sizeof(cwd));  // Get the current working directory
         
-//         // Mendapatkan nama pengguna dan nama mesin
+//         // Retrieve username and hostname
 //         char *username = getenv("USER");
 //         char hostname[1024];
 //         gethostname(hostname, sizeof(hostname));
 
-//         // Mendapatkan direktori home
+//         // Retrieve home directory path
 //         char *home_dir = getenv("HOME");
 
-//         // Menampilkan prompt berdasarkan flag 'use_advanced_prompt'
+//         // Display the prompt depending on the 'use_advanced_prompt' flag
 //         if (use_advanced_prompt) {
-//             // Format Advanced: machinename@username:~/subdir$
+//             // Advanced format: machinename@username:~/subdir$
 //             if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
-//                 // Jika direktori saat ini berada di dalam home, tampilkan ~
+//                 // If inside the home directory, replace the path with ~
 //                 printf("%s@%s:~%s$ ", username, hostname, cwd + strlen(home_dir));
 //             } else {
-//                 // Menampilkan path lengkap jika berada di luar direktori home
+//                 // Show full path if outside home directory
 //                 printf("%s@%s:%s$ ", username, hostname, cwd);
 //             }
 //         } else {
-//             // Format Basic: prompt$
+//             // Basic format: prompt$
 //             if (strncmp(cwd, home_dir, strlen(home_dir)) == 0) {
-//                 // Menampilkan ~ jika berada di dalam direktori home
-//                 printf("prompt$ ~%s$ ", cwd + strlen(home_dir));  // Menampilkan path relatif dari home
+//                 // Show relative path from home using ~
+//                 printf("prompt$ ~%s$ ", cwd + strlen(home_dir));
 //             } else {
-//                 // Menampilkan path lengkap jika berada di luar direktori home
-//                 printf("prompt$ %s$ ", cwd);  // Menampilkan path lengkap
+//                 // Show full path if outside home directory
+//                 printf("prompt$ %s$ ", cwd);
 //             }
 //         }
 
-//         // Membaca input pengguna
+//         // Read user input
 //         fgets(cmd, sizeof(cmd), stdin);
-//         cmd[strcspn(cmd, "\n")] = 0;  // Menghapus karakter newline
+//         cmd[strcspn(cmd, "\n")] = 0;  // Remove newline character from input
 
-//         // Menangani perintah yang dimasukkan
+//         // Handle the entered command
 //         handle_command(cmd);
 //     }
 
