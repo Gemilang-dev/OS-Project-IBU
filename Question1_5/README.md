@@ -6,13 +6,13 @@
 Question 1.5.1: Kernel vs User Mode
 -----------------------------------
 
-Program try to read infomation from disk:
+### Program try to read infomation from disk:
 
 Kernel = needed.
 
 Why? System privileges are needed for the programme to perform input and output to the disk. That is, user mode programmes have to make system calls to the kernel which is careful about anything requiring physical access like disks.
 
-Reading the current time from the hardware clock:
+### Reading the current time from the hardware clock:
 
 Kernel = needed.
 
@@ -69,7 +69,7 @@ else {
 
 **Explanation of Possible Outputs:**
 
-Program Outline:
+### Program Outline:
 
 The child process is created using fork().
 
