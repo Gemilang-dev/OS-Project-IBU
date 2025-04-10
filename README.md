@@ -4,7 +4,26 @@
 
 ### Isa Selimovic
 
-Project Topic 2
+## Project Stucture
+
+MyShellProject/           # Main folder for the entire project
+├── README.md             # Project documentation (usage instructions)
+└── First Project/
+    ├── bin/                  # Folder for executable binary files
+    │   └── shell             # Compiled binary file of the shell
+    ├── include/              # Folder for header files (.h)
+    │   └── shell.h           # Header file containing function declarations
+    ├── obj/                  # Folder for compiled object files
+    │   ├── shell.o           # Compiled object file from shell.c
+    │   ├── commands.o        # Compiled object file from commands.c
+    │   └── utils.o           # Compiled object file from utils.c
+    ├── src/                  # Folder for C source code files (.c)
+    │   ├── shell.c           # Main implementation of the shell
+    │   ├── commands.c        # Implementation of shell commands
+    │   └── utils.c           # Utility functions for the shell
+    ├── tests/                # Folder for test files
+    │   ├── test1_1/          # Test folder for Task
+    └── Makefile              # File for the build process (using make)
 
 ## Task 1.1: Shell Interface
 
