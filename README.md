@@ -6,6 +6,7 @@
 
 ## Project Stucture
 
+```bash
 MyShellProject/           # Main folder for the entire project
 ├── README.md             # Project documentation (usage instructions)
 └── First Project/
@@ -24,6 +25,7 @@ MyShellProject/           # Main folder for the entire project
     ├── tests/                # Folder for test files
     │   ├── test1_1/          # Test folder for Task
     └── Makefile              # File for the build process (using make)
+```
 
 ## Task 1.1: Shell Interface
 
