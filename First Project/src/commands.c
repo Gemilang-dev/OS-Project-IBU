@@ -1,101 +1,96 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>  // Untuk open()
-#include <unistd.h>  // Untuk fork(), execvp(), wait()
-#include <sys/wait.h>  // Untuk wait()
+#include <fcntl.h>  // For open()
+#include <unistd.h>  // For fork(), execvp(), wait()
+#include <sys/wait.h>  // For wait()
 #include "shell.h"
 
 #define HISTORY_SIZE 10
 
-// Definisi variabel global
+// Definition of global variables
 char *history[HISTORY_SIZE];
 int history_index = 0;
 
-// Fungsi untuk menambahkan perintah ke dalam riwayat history
+// Function to add a command to the history
 void add_to_history(char *cmd) {
-    // Memastikan perintah yang dimasukkan akan disalin dalam history[]
-    history[history_index % HISTORY_SIZE] = strdup(cmd);  // Salin perintah ke dalam array history[]
+    // Ensure the entered command is copied into history[]
+    history[history_index % HISTORY_SIZE] = strdup(cmd);  // Copy the command into the history[] array
     history_index++;
 }
 
-// Fungsi untuk menampilkan riwayat perintah
+// Function to display the command history
 void execute_history() {
-    printf("History Commend:\n");
-    // Tampilkan semua perintah yang tersimpan di history[]
+    printf("History Command:\n");
+    // Display all commands stored in history[]
     for (int i = 0; i < HISTORY_SIZE; i++) {
         if (history[i] != NULL) {
-            printf("%s\n", history[i]);  // Menampilkan setiap perintah yang ada di history[]
+            printf("%s\n", history[i]);  // Display each command in history[]
         }
     }
 }
 
-// Fungsi untuk menjalankan perintah free (menampilkan penggunaan memori)
+// Function to execute the free command (displays memory usage)
 void execute_free() {
     if (fork() == 0) {
         char *args[] = {"free", NULL};
         execvp("free", args);
-        exit(1);  // Jika execvp gagal
+        exit(1);  // Exit if execvp fails
     } else {
-        wait(NULL);  // Proses induk menunggu proses anak
+        wait(NULL);  // Parent process waits for child process to finish
     }
 }
 
-
-
-// Fungsi untuk menyalin file menggunakan perintah cp
+// Function to copy files using the cp command
 void execute_cp(char *source, char *destination) {
-    // Mengecek apakah source dan destination tidak kosong
+    // Check if source and destination are not null
     if (source == NULL || destination == NULL) {
         printf("Source or destination file is missing.\n");
         return;
     }
 
-    // Menjalankan perintah cp dengan execvp di dalam proses anak
+    // Run the cp command with execvp in the child process
     if (fork() == 0) {
-        // Menyusun argumen untuk perintah cp
-        char *args[] = {"cp", source, destination, NULL};  // Perintah cp diikuti dengan source dan destination
-        execvp("cp", args);  // Menjalankan perintah cp
-        perror("Error executing cp");  // Jika execvp gagal
+        // Prepare arguments for the cp command
+        char *args[] = {"cp", source, destination, NULL};  // cp command followed by source and destination
+        execvp("cp", args);  // Execute the cp command
+        perror("Error executing cp");  // If execvp fails
         exit(1);
     } else {
-        wait(NULL);  // Proses induk menunggu proses anak selesai
+        wait(NULL);  // Parent process waits for child process to finish
     }
 }
 
-
-// Fungsi untuk membuat file menggunakan perintah touch
+// Function to create a file using the touch command
 void execute_touch(char *filename) {
-    int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);  // 0644 adalah hak akses default untuk file
+    int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);  // 0644 is the default file permission
     if (fd == -1) {
         perror("Error creating file");
         return;
     }
-    close(fd);  // Menutup file descriptor setelah file dibuat
-    printf("File '%s' created successfully.\n", filename);  // Memberi konfirmasi file telah dibuat
+    close(fd);  // Close file descriptor after creating the file
+    printf("File '%s' created successfully.\n", filename);  // Confirm that the file has been created
 }
 
-
-
-// Fungsi untuk menjalankan perintah fortune (menampilkan kutipan acak)
+// Function to execute the fortune command (displays a random quote)
 void execute_fortune() {
-    // Array yang berisi 3 kutipan
+    // Array containing 3 quotes
     const char *quotes[] = {
         "No pain no gain",
         "The best way out is always through",
         "The journey of a thousand miles begins with one step."
     };
 
-    // Mengambil indeks acak antara 0 dan 2
+    // Get a random index between 0 and 2
     int random_index = rand() % 3;
 
-    // Menampilkan kutipan acak
+    // Display the random quote
     printf("%s\n", quotes[random_index]);
 }
 
-// Fungsi untuk menjalankan perintah checkGuardian (menampilkan guardian acak)
+// Function to execute the checkGuardian command (displays a random guardian)
 void execute_checkGuardian() {
-    // Array yang berisi daftar guardian dan deskripsinya
+    // Array containing a list of guardians and their descriptions
     const char *guardians[] = {
         "Goatikins – (A tiny goat spirit that thinks it's royalty and refuses to walk on grass.) Si Kambing Manja",
         "Quacknado – (A duck that spins like a tornado when angry, usually over stale bread.) Bebek Angin Puyuh",
@@ -109,46 +104,46 @@ void execute_checkGuardian() {
         "Fartlebee – (A bumblebee that propels itself with tiny toots, often leaving a glitter trail.) Lebah Kentut"
     };
 
-    // Mengambil indeks acak antara 0 dan 9
+    // Get a random index between 0 and 9
     int random_index = rand() % 10;
 
-    // Menampilkan guardian yang dipilih
+    // Display the chosen guardian
     printf("Your guardian/ Kodam Kamu:\n%s\n", guardians[random_index]);
 }
 
-// Fungsi untuk membuat file slist.txt berisi hasil perkalian
+// Function to create the slist.txt file containing multiplication results
 void execute_slist() {
-    FILE *file = fopen("slist.txt", "w");  // Membuka file untuk menulis (akan membuat file baru jika tidak ada)
+    FILE *file = fopen("slist.txt", "w");  // Open the file for writing (will create the file if it doesn't exist)
 
     if (file == NULL) {
-        perror("Error opening file");  // Menampilkan pesan kesalahan jika file gagal dibuka
+        perror("Error opening file");  // Display error message if file can't be opened
         return;
     }
 
-    // Menulis hasil perkalian 1x1 sampai 100x100 ke dalam file
+    // Write multiplication results from 1x1 to 100x100 into the file
     for (int i = 1; i <= 100; i++) {
-        fprintf(file, "%dx%d=%d\n", i, i, i * i);  // Menulis ke dalam file dalam format "1x1=1"
+        fprintf(file, "%dx%d=%d\n", i, i, i * i);  // Write in the format "1x1=1"
     }
 
-    fclose(file);  // Menutup file setelah selesai menulis
+    fclose(file);  // Close the file after writing
     printf("File 'slist.txt' has been created successfully.\n");
 }
 
 void execute_execlp() {
-    pid_t pid = fork();  // Membuat proses anak
+    pid_t pid = fork();  // Create a child process
 
     if (pid == 0) {
-        // Proses anak
-        execlp("ls", "ls", "-l", NULL);  // Menjalankan perintah ls -l
-        perror("execlp failed");  // Jika execlp gagal
+        // Child process
+        execlp("ls", "ls", "-l", NULL);  // Run the ls -l command
+        perror("execlp failed");  // If execlp fails
         exit(1);
     } else {
-        wait(NULL);  // Proses induk menunggu proses anak selesai
+        wait(NULL);  // Parent process waits for child process to finish
     }
 }
 
 void execute_forkbomb() {
     while (1) {
-        fork();  // Membuat banyak proses terus-menerus
+        fork();  // Continuously create processes
     }
 }
