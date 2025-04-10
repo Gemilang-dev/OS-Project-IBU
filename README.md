@@ -154,3 +154,130 @@ The goal of **Task 2.2** is to implement several useful shell commands and integ
      ```
 
 ---
+
+## Task 1.3: System Calls Implementation
+IT 204 Operating Systems
+Shell Project - March 2025
+
+### Overview:
+In this task, we explore system calls in C programming. The system calls implemented are:
+
+- fork()
+- wait()
+- exec()
+- execlp()
+- rfork()
+- forkbomb (exploration)
+
+These system calls are used in the context of a shell program to create processes, wait for processes to finish, and execute new programs.
+
+### Implementation:
+Below is the terminal output with embedded comments explaining each command and its corresponding system call:
+
+#### Terminal Output 1:
+```bash
+ayi_qli_emilang@INBOOKX2GEN11:~/OS-IBU/OS-Project-IBU/First Project$ bin/shell
+ayi_qli_emilang@INBOOKX2GEN11:~/OS-IBU/OS-Project-IBU/First Project$ ls
+This is the parent process, waiting for the child to finish.
+This is the child process.
+total 28
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang  301 Apr 10 00:09 Makefile
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 bin
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang    0 Apr 10 03:53 copyfile.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:32 include
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:12 obj
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang   23 Apr 10 05:15 output.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 src
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang    0 Apr 10 04:32 testfile.txt
+drwxr-xr-x 3 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 04:18 tests
+```
+
+#### Explanation:
+This is the initial output of running the shell. It displays the contents of the directory after performing a fork() call, where the child process is created.
+The parent process waits for the child to finish, as indicated by the message "This is the parent process, waiting for the child to finish."
+The child process also outputs the message "This is the child process." This confirms the successful creation of a child process using fork().
+
+#### Terminal Output 2:
+```bash
+ayi_qli_emilang@INBOOKX2GEN11:~/OS-IBU/OS-Project-IBU/First Project$ fork_test
+This is the parent process, waiting for the child to finish.
+This is the child process.
+total 28
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang  301 Apr 10 00:09 Makefile
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 bin
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang    0 Apr 10 03:53 copyfile.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:32 include
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:12 obj
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang   23 Apr 10 05:15 output.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 src
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang    0 Apr 10 04:32 testfile.txt
+drwxr-xr-x 3 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 04:18 tests
+Child process finished.
+```
+
+#### Explanation:
+This output shows the result of calling the fork_test program. The parent process waits for the child to finish (as shown by the "waiting for the child to finish" message).
+After the child finishes its task, it prints the "Child process finished." message.
+
+#### Terminal Output 3:
+```bash
+ayi_qli_emilang@INBOOKX2GEN11:~/OS-IBU/OS-Project-IBU/First Project$ echo "Hello, World!"
+This is the parent process, waiting for the child to finish.
+This is the child process.
+total 28
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang  301 Apr 10 00:09 Makefile
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 bin
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang    0 Apr 10 03:53 copyfile.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:32 include
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:12 obj
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang   23 Apr 10 05:15 output.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 src
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang    0 Apr 10 04:32 testfile.txt
+drwxr-xr-x 3 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 04:18 tests
+Child process finished.
+"Hello, World!"
+```
+
+#### Explanation:
+This output shows the usage of the echo command within a process. The parent waits for the child process to finish.
+The child process prints "Hello, World!" to indicate successful execution. This demonstrates how exec() could replace the current process image with a new program.
+
+#### Terminal Output 4:
+```bash
+ayi_qli_emilang@INBOOKX2GEN11:~/OS-IBU/OS-Project-IBU/First Project$ execlp
+This is the parent process, waiting for the child to finish.
+This is the child process.
+total 28
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang  301 Apr 10 00:09 Makefile
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 bin
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang    0 Apr 10 03:53 copyfile.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:32 include
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:12 obj
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang   23 Apr 10 05:15 output.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 src
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang    0 Apr 10 04:32 testfile.txt
+drwxr-xr-x 3 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 04:18 tests
+Child process finished.
+```
+
+#### Explanation:
+The execlp() system call executes a new program within the child process. The parent process waits for the child process to finish.
+After execution, the child finishes and the "Child process finished" message is displayed.
+
+#### Terminal Output 5:
+```bash
+ayi_qli_emilang@INBOOKX2GEN11:~/OS-IBU/OS-Project-IBU/First Project$ rfork
+This is the parent process, waiting for the child to finish.
+This is the child process.
+total 28
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang  301 Apr 10 00:09 Makefile
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 bin
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang    0 Apr 10 03:53 copyfile.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:32 include
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr  9 23:12 obj
+-rw-r--r-- 1 ayi_qli_emilang ayi_qli_emilang   23 Apr 10 05:15 output.txt
+drwxr-xr-x 2 ayi_qli_emilang ayi_qli_emilang 4096 Apr 10 05:36 src
+```
+
+#### Explanation:
+The rfork system call is used to create a new thread-like process. It shares the address space between the parent and child processes, which helps in implementing a lightweight thread process.
