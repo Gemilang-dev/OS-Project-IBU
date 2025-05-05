@@ -101,7 +101,13 @@ Memory successfully unmapped.
 The following command was used to check memory usage:
 
 ```
-ps -o pid,vsz,rss,comm -p pid
+void print_memory_usage(const char *stage) {
+char command[256];   
+snprintf(command, sizeof(command),
+"echo \"\\n[%s]\" && ps -o pid,vsz,rss,comm -p %d", // HERE
+stage, getpid());  
+system(command);  
+}
 ```
 
 Results observed from your output:
@@ -119,34 +125,6 @@ Base on the table we can draw conclution as below:
 - Linux's lazy allocation (which means no physical memory is allocated until the page is requested) means that RSS (Resident Set Size) stays intact after mapping.
 - Writing to memory causes a page fault, which in turn causes the system to allocate real physical memory, therefore RSS increases only after that.
 
-In code section:
-
-```
-void print_memory_usage(const char *stage) {
-char command[256];   
-snprintf(command, sizeof(command),
-"echo \"\\n[%s]\" && ps -o pid,vsz,rss,comm -p %d", // HERE
-stage, getpid());  
-system(command);  
-}
-```
-
-`ps` is used to monitor memory usage during three stages of the `mmap_demo` program. So we get this result:
-
-
-| Stage                   | VSZ (KB) | RSS (KB) |
-| ----------------------- | -------- | -------- |
-| Initial                 | 2552     | 1688     |
-| After mmap              | 2556     | 1688     |
-| After writing to memory | 2556     | 1692     |
-
-From the information about the experiment it can be seen that:
-
-- VSZ has been increased by 4 KB simultaneously with calling mmap. This shows a new memory mapping was added to the process’s address space.
-- The Physical memory usage (RSS) is however the same, which indicates the memory is not physically allocated yet.
-- After writing to the allocated memory, there is an increase in RSS by 4 KB. This shows that Linux indeed does “lazy allocation”, providing actual physical pages only when they are accessed.
-- Increase in RSS indicates a “page fault” that happened causing the OS to allocate a real physical page.
-- Such behavior is observant in Linux anonymous memory mapping and shows further deferment to allocation until needed. Linux's free allocation techniques showcase inefficient memory management.
 
 ### 📌 2. /proc/pid/maps observation
 
