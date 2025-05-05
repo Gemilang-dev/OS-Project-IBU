@@ -36,10 +36,14 @@ int main() {
     printf("\n[Pause] Press Enter to continue after checking /proc/%d/maps...\n", getpid());
     getchar();
 
-    
+
     // Step 4: Write to the allocated memory to trigger actual physical allocation
     memset(addr, 42, SIZE);    // Fill memory with the value 42
     print_memory_usage("After writing to memory");
+
+    // Pause again for another check
+    printf("\n[Pause] Press Enter to continue after checking /proc/%d/maps again...\n", getpid());
+    getchar();
 
     // Step 5: Unmap the memory using munmap
     if (munmap(addr, SIZE) == -1) {   // Check if munmap failed
