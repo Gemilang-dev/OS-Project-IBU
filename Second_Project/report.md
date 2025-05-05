@@ -46,3 +46,63 @@ Parameter Explanation:
 
 * mmap is useful when you want to manage memory manually, for example creating a replacement for malloc.
 * After finishing using memory, always use munmap to prevent memory leaks.
+
+### 2.2 Implemtation C Program (mmap\_demo.c)
+
+**📌 Compile Program**
+
+```
+gcc mmap_demo.c -o mmap_demo
+```
+
+**📌 Run Program**
+
+```
+./mmap_demo
+```
+
+**📌 Result**
+
+```
+ayi_qli_emilang@INBOOKX2GEN11:~/OS-IBU/OS-Project-IBU/Second_Project$ ./mmap_demo[Initial]
+PID    VSZ   RSS COMMAND
+2215   2552  1688 mmap_demo[After mmap]
+PID    VSZ   RSS COMMAND
+2215   2556  1688 mmap_demo[After writing to memory]
+PID    VSZ   RSS COMMAND
+2215   2556  1692 mmap_demo
+
+Memory successfully unmapped.
+```
+
+### Task 2.3: Memory Usage Analysis
+
+in the code in the
+
+In code section:
+
+```
+void print_memory_usage(const char *stage) {
+char command[256];   
+snprintf(command, sizeof(command),
+"echo \"\\n[%s]\" && ps -o pid,vsz,rss,comm -p %d", // HERE
+stage, getpid());  
+system(command);        
+}
+```
+
+`ps` is used to monitor memory usage during three stages of the `mmap_demo` program. So we get this result:
+
+| Stage                  | VSZ (KB) | RSS (KB) |
+|------------------------|----------|----------|
+| Initial                | 2552     | 1688     |
+| After mmap             | 2556     | 1688     |
+| After writing to memory| 2556     | 1692     |
+
+From the information about the experiment it can be seen that:
+
+- VSZ has been increased by 4 KB simultaneously with calling mmap. This shows a new memory mapping was added to the process’s address space.
+- The Physical memory usage (RSS) is however the same, which indicates the memory is not physically allocated yet.
+- After writing to the allocated memory, there is an increase in RSS by 4 KB. This shows that Linux indeed does “lazy allocation”, providing actual physical pages only when they are accessed.
+- Increase in RSS indicates a “page fault” that happened causing the OS to allocate a real physical page.
+- Such behavior is observant in Linux anonymous memory mapping and shows further deferment to allocation until needed. Linux's free allocation techniques showcase inefficient memory management.
