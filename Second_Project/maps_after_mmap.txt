@@ -1,0 +1,22 @@
+55600c031000-55600c032000 r--p 00000000 08:20 53665                      /home/ayi_qli_emilang/OS-IBU/OS-Project-IBU/Second_Project/mmap_demo
+55600c032000-55600c033000 r-xp 00001000 08:20 53665                      /home/ayi_qli_emilang/OS-IBU/OS-Project-IBU/Second_Project/mmap_demo
+55600c033000-55600c034000 r--p 00002000 08:20 53665                      /home/ayi_qli_emilang/OS-IBU/OS-Project-IBU/Second_Project/mmap_demo
+55600c034000-55600c035000 r--p 00002000 08:20 53665                      /home/ayi_qli_emilang/OS-IBU/OS-Project-IBU/Second_Project/mmap_demo
+55600c035000-55600c036000 rw-p 00003000 08:20 53665                      /home/ayi_qli_emilang/OS-IBU/OS-Project-IBU/Second_Project/mmap_demo
+55602bc64000-55602bc85000 rw-p 00000000 00:00 0                          [heap]
+7f70be6ae000-7f70be6b1000 rw-p 00000000 00:00 0 
+7f70be6b1000-7f70be6d9000 r--p 00000000 08:20 12715                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7f70be6d9000-7f70be861000 r-xp 00028000 08:20 12715                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7f70be861000-7f70be8b0000 r--p 001b0000 08:20 12715                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7f70be8b0000-7f70be8b4000 r--p 001fe000 08:20 12715                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7f70be8b4000-7f70be8b6000 rw-p 00202000 08:20 12715                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7f70be8b6000-7f70be8c3000 rw-p 00000000 00:00 0 
+7f70be8c7000-7f70be8ca000 rw-p 00000000 00:00 0 
+7f70be8ca000-7f70be8cb000 r--p 00000000 08:20 12512                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7f70be8cb000-7f70be8f6000 r-xp 00001000 08:20 12512                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7f70be8f6000-7f70be900000 r--p 0002c000 08:20 12512                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7f70be900000-7f70be902000 r--p 00036000 08:20 12512                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7f70be902000-7f70be904000 rw-p 00038000 08:20 12512                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7ffefd9f9000-7ffefda1b000 rw-p 00000000 00:00 0                          [stack]
+7ffefdb91000-7ffefdb95000 r--p 00000000 00:00 0                          [vvar]
+7ffefdb95000-7ffefdb97000 r-xp 00000000 00:00 0                          [vdso]
