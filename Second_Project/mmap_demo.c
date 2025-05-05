@@ -32,6 +32,11 @@ int main() {
     // Step 3: Print memory usage after mmap allocation
     print_memory_usage("After mmap");
 
+    // ------------------- Additional code for 2.3 (Pause: Check /proc/<PID>/maps in another terminal now)
+    printf("\n[Pause] Press Enter to continue after checking /proc/%d/maps...\n", getpid());
+    getchar();
+
+    
     // Step 4: Write to the allocated memory to trigger actual physical allocation
     memset(addr, 42, SIZE);    // Fill memory with the value 42
     print_memory_usage("After writing to memory");

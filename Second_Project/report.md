@@ -106,3 +106,23 @@ From the information about the experiment it can be seen that:
 - After writing to the allocated memory, there is an increase in RSS by 4 KB. This shows that Linux indeed does “lazy allocation”, providing actual physical pages only when they are accessed.
 - Increase in RSS indicates a “page fault” that happened causing the OS to allocate a real physical page.
 - Such behavior is observant in Linux anonymous memory mapping and shows further deferment to allocation until needed. Linux's free allocation techniques showcase inefficient memory management.
+
+
+### Task 2.4: Explanation of Observations
+
+#### a. Memory Usage (VSZ and RSS)
+
+Below is a summary of memory usage in the three programming stages :
+
+| Stage                  | VSZ (KB) | RSS (KB) |
+|------------------------|----------|----------|
+| Initial                | 2552     | 1688     |
+| After mmap             | 2556     | 1688     |
+| After writing to memory| 2556     | 1692     |
+
+These results confirm that the call to `mmap()` added a new memory mapping to the process’s virtual address space, increasing VSZ by 4 KB. However, no additional physical memory (RSS) was used until the memory was accessed via writing.
+
+#### b. /proc/<PID>/maps Explanation
+
+Although the `/proc/<PID>/maps` file was not captured during execution, we can infer that after calling `mmap()`, a new entry appeared in this file. This entry would represent an **anonymous private memory mapping**, typically labeled as:
+
