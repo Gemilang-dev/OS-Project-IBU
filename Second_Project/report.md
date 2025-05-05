@@ -187,5 +187,49 @@ Because Linux uses a lazy allocation method, which typically results in a page f
 
 * In '/proc/<PID>/maps', you can see that the anonymous memory was still allocated after writing.
 * *It has been confirmed by the increase in RSS that physical memory was allocated only after access occurred.  Physical memory was allocated immediately upon access, as confirmed by the increase in RSS.
-
 * Lazy memory allocation and the triggering of a page fault on first write are compatible with this.  Lazy memory allocation and the triggering of a page fault on first write are compatible with this.
+
+## Task 2.4 – Explain Observations
+
+### This section summaries and elucidates the memory use behaviour of the mmap\_demo program using the `/proc//maps` file, the results of ps, and our understanding of Linux memory management algorithms.
+
+### a. Memory Usage Observations
+
+The memory usage at each stage of the program execution is as follows :
+
+
+| Stage                    | VSZ (KB) | RSS (KB) | Description                                      |
+| ------------------------ | -------- | -------- | ------------------------------------------------ |
+| **Initial**              | 2552     | 1708     | Before any memory mapping                        |
+| **After`mmap()`**        | 2556     | 1708     | Anonymous page mapped, but not yet used          |
+| **After writing memory** | 2688     | 1776     | Page accessed (written to), physical memory used |
+
+* The Virtual Set Size (VSZ) increased slightly after mmap() due to the expansion of the program's virtual address space.
+* Maps had no effect on Resident Set Size (RSS) because the RAM wasn't used yet.
+* The jump in RSS after writing to memory was an indication that the page was now being supported by actual physical memory.
+
+### b. Excerpts from `/proc/<PID>/maps`
+
+We observed the following relevant memory segment after mapping and writing to the memory:
+
+```
+7f70be6ae000-7f70be6b1000 rw-p 00000000 00:00 0
+```
+
+Here we have an anonymous private mapping that was created with MAP_ANONYMOUS | MAP_PRIVATE.  Throughout the entirety of the show, the region stayed.
+
+As soon as the first write operation was performed, the RSS data became backed by physical memory; the memory range stayed constant throughout the mapping and writing steps.
+
+
+### c. Analysis & Explanation
+
+These observations confirm key concepts of **Linux memory management**:
+
+* **Lazy Allocation**: When a process uses `mmap()` to map memory, Linux does not immediately allocate physical pages. Instead, it reserves the address space in the virtual memory layout.
+* **Page Faults**: Physical memory is only allocated when the process accesses the page (e.g., by writing to it). This triggers a **page fault**, which causes the kernel to allocate a page frame and map it to the corresponding virtual address.
+* **Impact on RSS**: Since RSS measures the portion of memory that is physically resident, it only increases after the memory is accessed. This explains why VSZ increased slightly after mapping, but RSS did not rise until the write occurred.
+
+
+### Conclusion
+
+Through this experiment, we clearly demonstrated how **memory mappings behave differently before and after access**, and how tools like `ps` and `/proc/<PID>/maps` help visualize these changes. The results matched expectations and provided hands-on insight into **virtual vs physical memory**, **lazy allocation**, and **demand paging** in Linux.
