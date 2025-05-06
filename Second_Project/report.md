@@ -1,7 +1,7 @@
 # Project 2: Memory Management in Linux using `mmap()` and `munmap()`
 
-- Rayi Aqli Gemilang
-- Isa Selimovic
+- Rayi Aqli Gemilang : 23004679
+- Isa Selimovic : 23004240
 
 ## Task 2.1
 
@@ -24,12 +24,6 @@ Parameter Explanation:
 | MAP\_PRIVATE I MAP\_ANONYMOUS | MAP_PRIVATE: changes are not shared with other processes. MAP_ANONYMOUS: not associated with any file. |
 | -1                             | Because it does not use a file, the file descriptor is filled with -1.                                 |
 | 0                              | Initial offset in the file (if using a file), filled with 0 for anonymous.                             |
-
-PROT_READ | PROT_WRITE Memory access rights: can be read and written.
-MAP_PRIVATE | MAP_ANONYMOUS MAP_PRIVATE: changes are not shared with other processes.
-MAP_ANONYMOUS: not associated with any file.
--1 Because it does not use a file, the file descriptor is filled with -1.
-0 Initial offset in the file (if using a file), filled with 0 for anonymous.
 
 Result: Pointer (ptr) to an empty block of memory that can be used like an array or regular buffer.
 
@@ -284,3 +278,10 @@ This will:
 Go back to Terminal 1 and press Enter to proceed with the program when the script finishes showing the memory analysis.
 
 At several moments in mmap\_demo, you can call this procedure to see memory changes, such as after `mmap `or after writing to memory.
+
+
+
+### Contributions :
+
+* **Rayi Aqli Gemilang** (23004679): Responsible for writing the report and implementing the code in section *2.5*.
+* **Isa Selimovic** (23004240): Responsible for implementing the code in section *2.2*.
