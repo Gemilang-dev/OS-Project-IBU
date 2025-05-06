@@ -1,3 +1,11 @@
+# Project 2: Memory Management in Linux using `mmap()` and `munmap()`
+
+
+- Rayi Aqli Gemilang  
+- Isa Selimovic
+
+
+
 ## Task 2.1
 
 ### **📌 mmap**
@@ -44,7 +52,7 @@ Parameter Explanation:
 | ptr       | The starting address of the memory to be freed (must be the same as the result of mmap). |
 | 4096      | The size of the memory to be freed (must be the same as when allocated).                 |
 
- Notes :
+Notes :
 
 * mmap is useful when you want to manage memory manually, for example creating a replacement for malloc.
 * After finishing using memory, always use munmap to prevent memory leaks.
@@ -124,7 +132,6 @@ Base on the table we can draw conclution as below:
 - Since the process acquires a new virtual memory zone after calling mmap(), the Virtual Set Size (VSZ) somewhat grows.
 - Linux's lazy allocation (which means no physical memory is allocated until the page is requested) means that RSS (Resident Set Size) stays intact after mapping.
 - Writing to memory causes a page fault, which in turn causes the system to allocate real physical memory, therefore RSS increases only after that.
-
 
 ### 📌 2. /proc/pid/maps observation
 
@@ -211,3 +218,60 @@ These observations confirm key concepts of **Linux memory management**:
 ### Conclusion
 
 Through this experiment, we clearly demonstrated how **memory mappings behave differently before and after access**, and how tools like `ps` and `/proc/<PID>/maps` help visualize these changes. The results matched expectations and provided hands-on insight into **virtual vs physical memory**, **lazy allocation**, and **demand paging** in Linux.
+
+## Task 2.5 – `analyse.sh` (Automated Memory Analysis Script)
+
+### How to Use:
+
+This script helps you analyze the memory usage of a running process, especially for your `mmap_demo` program.
+
+#### **1. Go to the folder where `analyse.sh` is saved**
+
+Make sure your terminal is in the directory where `analyse.sh` is located.
+
+```
+cd /path/to/your/folder
+```
+
+#### **2. Make the script executable**
+
+You only need to do this **once**:
+
+```
+chmod +x analyse.sh
+```
+
+#### **3. Run your mmap\_demo program in a separate terminal**
+
+In **Terminal 1**, run your `mmap_demo` and **wait at the [Pause] prompt**. For example:
+
+```
+./mmap_demo
+```
+
+When you see something like:
+
+```
+[Pause] Press Enter to continue after checking /proc/pid/maps...
+```
+
+**Do not press Enter yet.** Keep this terminal open.
+
+#### **4. In another terminal (Terminal 2), run the script**
+
+Use the command below to run the analysis script while `mmap_demo` is paused:
+
+```
+./analyse.sh $(pgrep mmap_demo)
+```
+
+This will:
+
+* Display the PID, VSZ, RSS, and command of the running process.
+* Show the memory mappings from `/proc/<PID>/maps`.
+
+#### **5. Return to Terminal 1 and continue**
+
+Go back to Terminal 1 and press Enter to proceed with the program when the script finishes showing the memory analysis.
+
+At several moments in mmap\_demo, you can call this procedure to see memory changes, such as after `mmap `or after writing to memory.

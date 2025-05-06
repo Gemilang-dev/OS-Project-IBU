@@ -25,7 +25,7 @@ int main() {
     addr = mmap(NULL, SIZE, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (addr == MAP_FAILED) {  // Check if mmap failed
-        perror("mmap failed"); // Print error message
+        perror("nah man. this mmap failed"); // Print error message
         return EXIT_FAILURE;
     }
 
@@ -33,7 +33,7 @@ int main() {
     print_memory_usage("After mmap");
 
     // ------------------- Additional code for 2.3 (Pause: Check /proc/<PID>/maps in another terminal now)
-    printf("\n[Pause] Press Enter to continue after checking /proc/%d/maps...\n", getpid());
+    printf("\n[Pause] Hold up, check the /proc/%d/maps one more time — then smash that Enter like you mean it, yo..\n", getpid());
     getchar();
 
 
@@ -42,17 +42,17 @@ int main() {
     print_memory_usage("After writing to memory");
 
     // Pause again for another check
-    printf("\n[Pause] Press Enter to continue after checking /proc/%d/maps again...\n", getpid());
+    printf("\n[Pause] Hold up, check the /proc/%d/maps one more time — then smash that Enter like you mean it, yo\n", getpid());
     getchar();
 
     // Step 5: Unmap the memory using munmap
     if (munmap(addr, SIZE) == -1) {   // Check if munmap failed
-        perror("munmap failed");     // Print error message
+        perror("munmap failed bro");     // Print error message
         return EXIT_FAILURE;
     }
 
     // Confirm successful unmapping
-    printf("\nMemory successfully unmapped.\n");
+    printf("\nMemory successfully unmapped shesssssssss!!!!.\n");
 
     return EXIT_SUCCESS;       // Exit program successfully
 }
