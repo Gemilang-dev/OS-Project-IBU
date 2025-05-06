@@ -1,10 +1,7 @@
 # Project 2: Memory Management in Linux using `mmap()` and `munmap()`
 
-
-- Rayi Aqli Gemilang  
+- Rayi Aqli Gemilang
 - Isa Selimovic
-
-
 
 ## Task 2.1
 
@@ -137,6 +134,12 @@ Base on the table we can draw conclution as below:
 
 #### a. After `mmap()` (before `memset()`)
 
+When [pause] appear run this code
+
+```
+cat /proc/$(pgrep mmap_demo)/maps > maps_after_mmap.txt
+```
+
 The results of the many results from `/proc/<PID>/maps` These are the results that we can process :
 
 ```
@@ -156,7 +159,13 @@ From these data it can be concluded that :
 
 #### b. After writing to memorysss
 
-Following the writing of the memory map to it by memset(), we re-examined it using /proc//maps.   The mmap()-generated anonymous memory area's virtual address range and permissions remained unchanged and visible.
+after seeing the results of the first code on the terminal that runs `cat /proc/$(pgrep mmap_demo)/maps > maps_after_mmap.txt` then. rerun the terminal from the `mmap_demo.c` program and pause will occur again then run this on another terminal
+
+```
+cat /proc/$(pgrep mmap_demo)/maps > maps_after_write.txtSeta
+```
+
+Following the writing of the memory map to it by memset(), we re-examined it using `/proc//maps. `  The mmap()-generated anonymous memory area's virtual address range and permissions remained unchanged and visible.
 
 For example:
 
@@ -172,8 +181,8 @@ Because Linux uses a lazy allocation method, which typically results in a page f
 
 ### Interpretation:
 
-* In '/proc/<PID>/maps', you can see that the anonymous memory was still allocated after writing.
-* *It has been confirmed by the increase in RSS that physical memory was allocated only after access occurred.  Physical memory was allocated immediately upon access, as confirmed by the increase in RSS.
+* In `/proc/pid/maps`, you can see that the anonymous memory was still allocated after writing.
+* It has been confirmed by the increase in RSS that physical memory was allocated only after access occurred.  Physical memory was allocated immediately upon access, as confirmed by the increase in RSS.
 * Lazy memory allocation and the triggering of a page fault on first write are compatible with this.  Lazy memory allocation and the triggering of a page fault on first write are compatible with this.
 
 ## Task 2.4 – Explain Observations
@@ -252,7 +261,7 @@ In **Terminal 1**, run your `mmap_demo` and **wait at the [Pause] prompt**. For 
 When you see something like:
 
 ```
-[Pause] Press Enter to continue after checking /proc/pid/maps...
+[Pause] Hold up, check the /proc/%d/maps one more time — then smash that Enter like you mean it, yo..
 ```
 
 **Do not press Enter yet.** Keep this terminal open.
